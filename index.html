@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shawarma Bite</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+:root{--bg:#fffaf0;--surface:#fff;--ink:#1c1a17;--mute:#6b645a;--red:#d62828;--gold:#f6b100;--green:#2f7d32;--line:#e8dfcf;--onred:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17130f;--surface:#221c16;--ink:#f6efe2;--mute:#b3a994;--line:#3a3128;--red:#ff5a4d;--gold:#ffc83d;--green:#6fcf73}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+header.hero{background:var(--red);color:#fff;padding:56px 0 40px;overflow:hidden}
+.hero h1{font-size:clamp(3.6rem,17vw,9rem);line-height:.86;letter-spacing:-.04em;font-weight:800;margin:0}
+.hero h1 span{display:block;color:var(--gold)}
+.hero p{max-width:30ch;font-size:1.2rem;margin:20px 0 24px}
+.btn{display:inline-block;background:var(--gold);color:#1c1a17;font:inherit;font-weight:700;border:0;border-radius:999px;padding:12px 24px;text-decoration:none;cursor:pointer}
+header.hero{background:radial-gradient(circle at 80% 20%,#ff7a2f 0,#d62828 45%,#8f1414 100%);position:relative}
+.herogrid{display:grid;gap:28px;align-items:center}
+@media(min-width:760px){.herogrid{grid-template-columns:1.1fr 1fr}}
+.hero .tag{font-size:1.5rem;font-weight:800;line-height:1.15;margin:20px 0 6px;max-width:16ch}
+.hero p{margin-top:6px}
+.ph{position:relative;display:grid;place-items:center;text-align:center;min-height:220px;border:2.5px dashed var(--gold);border-radius:22px;background:linear-gradient(135deg,rgba(246,177,0,.28),rgba(214,40,40,.18));color:var(--ink);font-weight:700}
+.ph::before{content:"📷";position:absolute;top:14px;left:16px;font-size:1.4rem}
+.ph small{font-weight:500;color:var(--mute)}
+.hero .ph{min-height:300px;color:#fff;background:rgba(255,255,255,.14);transform:rotate(2deg);box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.hero .ph small{color:#ffe9b0}
+.ph.wide{min-height:170px;margin-bottom:18px}
+.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+@media(min-width:760px){.gal{grid-template-columns:repeat(3,1fr)}}
+.gal .ph{min-height:0;aspect-ratio:1/1;padding:12px}
+.price{color:var(--red)}
+.item{transition:background .2s}.item:hover{background:rgba(246,177,0,.12)}
+.stripe{height:14px;background:repeating-linear-gradient(135deg,var(--gold) 0 14px,var(--ink) 14px 28px)}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;color:var(--ink);text-decoration:none;font-weight:600;padding:6px 14px;border:1.5px solid var(--line);border-radius:999px}
+nav a:hover,nav a:focus-visible{border-color:var(--red);outline:none}
+section{padding:36px 0 8px}
+h2{font-size:2rem;letter-spacing:-.02em;margin:0 0 4px}
+.sub{color:var(--mute);margin:0 0 16px}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1.5px dashed var(--line)}
+.dot{width:16px;height:16px;border:2px solid var(--green);display:grid;place-items:center;border-radius:3px}
+.dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--green)}
+.dot.nv{border-color:var(--red)}.dot.nv::after{background:var(--red)}
+.dot.eg{border-color:var(--gold)}.dot.eg::after{background:var(--gold)}
+.name{font-weight:600}.note{color:var(--mute);font-size:.9rem}
+.buy{display:flex;align-items:center;gap:12px}
+.price{font-weight:800;font-size:1.1rem;min-width:3.2ch;text-align:right}
+.add{background:var(--surface);color:var(--red);border:1.5px solid var(--red);font:inherit;font-weight:700;border-radius:8px;padding:6px 16px;cursor:pointer}
+.step{display:flex;align-items:center;background:var(--red);color:var(--onred);border-radius:8px;overflow:hidden}
+.step button{background:none;border:0;color:inherit;font:inherit;font-weight:800;font-size:1.1rem;width:34px;height:34px;cursor:pointer}
+.step span{min-width:1.6ch;text-align:center;font-weight:700}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+footer{margin-top:48px;padding:32px 0 120px;border-top:1px solid var(--line);color:var(--mute)}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--ink);color:var(--bg);padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));display:none;align-items:center;justify-content:space-between;gap:12px}
+#bar.on{display:flex}
+#bar b{font-size:1.2rem}
+#bar button{background:var(--gold);color:#1c1a17;border:0;font:inherit;font-weight:700;border-radius:999px;padding:10px 20px;cursor:pointer}
+dialog{border:0;border-radius:16px;padding:0;max-width:440px;width:calc(100% - 32px);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog .in{padding:24px}
+dialog h3{margin:0 0 12px;font-size:1.5rem}
+.row{display:flex;justify-content:space-between;gap:12px;padding:6px 0}
+.tot{border-top:2px solid var(--ink);margin-top:8px;padding-top:10px;font-weight:800;font-size:1.2rem}
+.acts{display:flex;gap:10px;margin-top:18px}
+.ghost{background:none;border:1.5px solid var(--line);color:var(--ink);font:inherit;font-weight:600;border-radius:999px;padding:10px 20px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.pic{width:100%;object-fit:cover;border-radius:22px;display:block}.pic.wide{height:170px;margin-bottom:18px}.hero .pic{height:300px;transform:rotate(2deg);box-shadow:0 18px 40px rgba(0,0,0,.35)}.gal .pic{aspect-ratio:1/1;height:auto}
+</style></head>
+<body>
+<header class="hero"><div class="wrap herogrid"><div>
+<h1>Shawarma<span>Bite</span></h1>
+<p class="tag">Juicy. Crispy. Hot off the spit.</p>
+<p>Wraps, rolls and sandwiches made fresh to order.</p>
+<a class="btn" href="#shawarmas">See the menu</a> <a class="btn" style="background:#fff" href="#gallery">See the photos</a>
+</div>
+<div id="heroph"></div>
+</div></header>
+<div class="stripe"></div>
+<nav aria-label="Menu sections"><div class="wrap" id="nav"></div></nav>
+<main class="wrap" id="menu"></main>
+<footer><div class="wrap">Shawarma Bite. Prices in rupees. <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--green);vertical-align:-1px"></span> veg &nbsp;<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--gold);vertical-align:-1px"></span> egg &nbsp;<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--red);vertical-align:-1px"></span> chicken</div></footer>
+<div id="bar"><div><b id="bt"></b><div id="bc" style="font-size:.85rem;opacity:.8"></div></div><button id="rev">Review order</button></div>
+<dialog id="dlg"><div class="in"><h3>Your order</h3><div id="lines"></div>
+<div class="row tot"><span>Total</span><span id="gt"></span></div>
+<div class="acts"><button class="btn" id="copy">Copy order</button><button class="ghost" id="close">Keep browsing</button></div>
+<p class="note" id="msg" role="status" style="margin:12px 0 0"></p></div></dialog>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.75.0/dist/umd/supabase.js"></script>
+<script>
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cats=[["shawarmas","Shawarmas","Wrapped hot, sauce and all."],["sandwiches","Sandwiches","Toasted and pressed."],["rolls","Rolls","Easy to hold, hard to put down."],["sides","Sides","Crispy things to share."]];
+const cls={v:"",c:"nv",e:"eg"};
+const menu=document.getElementById("menu"),nav=document.getElementById("nav"),dlg=document.getElementById("dlg");
+let photos={},items={},cart={};
+function ph(k,label,x=""){const u=photos[k];return u?`<img class="pic ${x}" src="${esc(u)}" alt="${esc(label)}" loading="lazy">`:`<div class="ph ${x}" role="img" aria-label="Photo spot: ${esc(label)}"><span>Photo spot<br><small>${esc(label)}</small></span></div>`}
+function render(rows){
+ nav.innerHTML="";menu.innerHTML="";items={};
+ document.getElementById("heroph").innerHTML=ph("hero","Shawarma Bite");
+ cats.forEach(([id,t,s])=>{nav.insertAdjacentHTML("beforeend",`<a href="#${id}">${t}</a>`);
+  let h=`<section id="${id}">${ph(id,t,"wide")}<h2>${t}</h2><p class="sub">${s}</p>`;
+  rows.filter(r=>r.category===id).forEach(r=>{const k="i"+r.id;items[k]={name:r.name+(r.note?` (${r.note})`:""),p:r.price,out:!r.available};
+   h+=`<div class="item"><span class="dot ${cls[r.kind]||""}"></span><div><div class="name">${esc(r.name)}</div>${r.note?`<div class="note">${esc(r.note)}</div>`:""}</div><div class="buy"><span class="price">₹${r.price}</span><span id="c-${k}">${r.available?"":'<span class="note">Sold out</span>'}</span></div></div>`});
+  menu.insertAdjacentHTML("beforeend",h+"</section>")});
+ nav.insertAdjacentHTML("beforeend",'<a href="#gallery">Gallery</a>');
+ menu.insertAdjacentHTML("beforeend",'<section id="gallery"><h2>Gallery</h2><p class="sub">Fresh from our counter.</p><div class="gal">'+[1,2,3,4,5,6].map(i=>ph("g"+i,"Gallery photo "+i)).join("")+"</div></section>");
+ for(const k in cart)if(!items[k]||items[k].out)delete cart[k];
+ Object.keys(items).forEach(k=>{if(!items[k].out)draw(k)});sync()}
+function draw(id){const q=cart[id]||0,el=document.getElementById("c-"+id);
+ el.innerHTML=q?`<span class="step"><button data-d="-1" data-id="${id}" aria-label="Remove one ${esc(items[id].name)}">−</button><span>${q}</span><button data-d="1" data-id="${id}" aria-label="Add one ${esc(items[id].name)}">+</button></span>`:`<button class="add" data-d="1" data-id="${id}">Add</button>`}
+function tot(){let q=0,s=0;for(const k in cart){q+=cart[k];s+=cart[k]*items[k].p}return[q,s]}
+function sync(){const[q,s]=tot();document.getElementById("bar").classList.toggle("on",q>0);
+ document.getElementById("bt").textContent="₹"+s;document.getElementById("bc").textContent=q+(q==1?" item":" items")}
+function lines(){const[q,s]=tot();document.getElementById("lines").innerHTML=Object.keys(cart).map(k=>`<div class="row"><span>${cart[k]} × ${esc(items[k].name)}</span><span>₹${cart[k]*items[k].p}</span></div>`).join("");
+ document.getElementById("gt").textContent="₹"+s;if(!q)dlg.close()}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;
+ const id=b.dataset.id;cart[id]=Math.max(0,(cart[id]||0)+ +b.dataset.d);if(!cart[id])delete cart[id];
+ draw(id);sync();if(dlg.open)lines()});
+document.getElementById("rev").onclick=()=>{lines();document.getElementById("msg").textContent="";dlg.showModal()};
+document.getElementById("close").onclick=()=>dlg.close();
+document.getElementById("copy").onclick=async()=>{const[q,s]=tot();
+ const t="Shawarma Bite order\n"+Object.keys(cart).map(k=>`${cart[k]} x ${items[k].name} - ₹${cart[k]*items[k].p}`).join("\n")+`\nTotal: ₹${s}`;
+ const m=document.getElementById("msg");
+ try{await navigator.clipboard.writeText(t);m.textContent="Order copied. Send it to the shop to place it."}catch(_){m.textContent="Couldn’t copy. Select the items above and send them to the shop."}};
+(async()=>{const[a,b]=await Promise.all([sb.from("menu_items").select("*").order("sort").order("id"),sb.from("site_photos").select("key,url")]);
+ if(a.error){menu.innerHTML='<p class="sub">The menu isn’t loading. Refresh the page to try again.</p>';return}
+ photos=Object.fromEntries((b.data||[]).map(r=>[r.key,r.url]));render(a.data)})();
+</script>
+</body></html>
