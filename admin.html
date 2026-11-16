@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Shawarma Bite admin</title>
+<style>
+:root{--bg:#fffaf0;--card:#fff;--ink:#1c1a17;--mute:#6b645a;--red:#d62828;--line:#e8dfcf}
+@media (prefers-color-scheme:dark){:root{--bg:#17130f;--card:#221c16;--ink:#f6efe2;--mute:#b3a994;--red:#ff5a4d;--line:#3a3128}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:960px;margin:0 auto;padding:20px}h1{margin:0 0 12px}
+input,select,button{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px}
+button{cursor:pointer;font-weight:600}button.p{background:var(--red);border-color:var(--red);color:#fff}
+.tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}.tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:720px}td,th{padding:6px;text-align:left;border-bottom:1px solid var(--line)}
+td input[type=text],td input:not([type]){width:100%}td input[type=number]{width:88px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px}
+.card img,.none{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:var(--line);display:grid;place-items:center;color:var(--mute)}
+#msg{min-height:1.5em;font-weight:600}.ok{color:#2f7d32}.bad{color:var(--red)}
+form.login{display:grid;gap:10px;max-width:340px}[hidden]{display:none!important}
+.add{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+</style></head><body><div class="w">
+<h1>Shawarma Bite admin</h1>
+<p id="msg" role="status"></p>
+<form class="login" id="login" hidden>
+<label>Email<br><input type="email" id="em" required autocomplete="username"></label>
+<label>Password<br><input type="password" id="pw" required autocomplete="current-password"></label>
+<button class="p">Log in</button></form>
+<div id="app" hidden>
+<div><span id="who"></span> <button id="out">Log out</button></div>
+<div class="tabs"><button data-t="menu">Menu</button><button data-t="photos">Photos</button><button data-t="staff" id="tab-staff" hidden>Staff</button></div>
+<section id="p-menu"><form class="add" id="addf">
+<input id="an" placeholder="Item name" required maxlength="80"><input id="at" placeholder="Note (6 pieces)" maxlength="60">
+<input id="ap" type="number" min="0" max="10000" placeholder="Price ₹" required>
+<select id="ac"></select><select id="ak"></select><button class="p">Add item</button></form>
+<div class="tw"><table><thead><tr><th>Name</th><th>Note</th><th>Price ₹</th><th>Section</th><th>Type</th><th>In stock</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section id="p-photos" hidden><p>Choose a JPG, PNG or WebP under 3 MB. It shows on the site right away.</p><div class="grid" id="photos"></div></section>
+<section id="p-staff" hidden><p>To add a person, create them in Supabase under Authentication > Users. Then set their role here.</p>
+<div class="tw"><table><tbody id="staff"></tbody></table></div></section>
+</div></div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.75.0/dist/umd/supabase.js"></script>
+<script>
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cats=["shawarmas","sandwiches","rolls","sides"],kinds={v:"Veg",c:"Chicken",e:"Egg"};
+let role=null,uid=null;
+const opts=(o,sel)=>Object.entries(Array.isArray(o)?Object.fromEntries(o.map(x=>[x,x])):o).map(([v,l])=>`<option value="${v}" ${v===sel?"selected":""}>${l}</option>`).join("");
+const say=(m,bad)=>{$("#msg").textContent=m;$("#msg").className=bad?"bad":"ok"};
+$("#ac").innerHTML=opts(cats);$("#ak").innerHTML=opts(kinds);
+async function boot(){
+ const{data:{session}}=await sb.auth.getSession();
+ if(!session){$("#login").hidden=false;$("#app").hidden=true;return}
+ uid=session.user.id;
+ const{data:p}=await sb.from("profiles").select("role").eq("id",uid).maybeSingle();
+ role=p?.role;
+ if(!role){await sb.auth.signOut();$("#login").hidden=false;$("#app").hidden=true;say("This account has no access. Ask the owner.",1);return}
+ $("#login").hidden=true;$("#app").hidden=false;$("#who").textContent=session.user.email+" ("+role+")";
+ $("#tab-staff").hidden=role!=="owner";tab("menu")}
+function tab(t){["menu","photos","staff"].forEach(x=>{$("#p-"+x).hidden=x!==t});
+ document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.t===t));
+ ({menu:loadMenu,photos:loadPhotos,staff:loadStaff})[t]()}
+document.querySelector(".tabs").onclick=e=>{const t=e.target.dataset.t;if(t)tab(t)};
+$("#login").onsubmit=async e=>{e.preventDefault();const{error}=await sb.auth.signInWithPassword({email:$("#em").value.trim(),password:$("#pw").value});
+ $("#pw").value="";if(error)return say("Wrong email or password.",1);say("");boot()};
+$("#out").onclick=async()=>{await sb.auth.signOut();say("");boot()};
+async function loadMenu(){const{data,error}=await sb.from("menu_items").select("*").order("category").order("sort").order("id");
+ if(error)return say("Couldn’t load the menu.",1);
+ $("#rows").innerHTML=data.map(r=>`<tr data-id="${r.id}"><td><input class="n" value="${esc(r.name)}" maxlength="80" aria-label="Name"></td><td><input class="t" value="${esc(r.note)}" maxlength="60" aria-label="Note"></td><td><input class="p" type="number" min="0" max="10000" value="${r.price}" aria-label="Price"></td><td><select class="c">${opts(cats,r.category)}</select></td><td><select class="k">${opts(kinds,r.kind)}</select></td><td><input class="a" type="checkbox" ${r.available?"checked":""} aria-label="In stock"></td><td><button class="sv p">Save</button> ${role==="owner"?'<button class="dl">Delete</button>':""}</td></tr>`).join("")}
+$("#rows").onclick=async e=>{const tr=e.target.closest("tr"),id=tr?.dataset.id;if(!id)return;
+ if(e.target.classList.contains("sv")){const price=parseInt(tr.querySelector(".p").value,10);
+  if(!(price>=0))return say("Enter a price.",1);
+  const{error}=await sb.from("menu_items").update({name:tr.querySelector(".n").value.trim(),note:tr.querySelector(".t").value.trim()||null,price,category:tr.querySelector(".c").value,kind:tr.querySelector(".k").value,available:tr.querySelector(".a").checked}).eq("id",id);
+  say(error?"Couldn’t save. Check the values.":"Saved.",!!error)}
+ if(e.target.classList.contains("dl")&&confirm("Delete this item for good?")){const{error}=await sb.from("menu_items").delete().eq("id",id);
+  if(error)say("Couldn’t delete.",1);else{say("Deleted.");loadMenu()}}};
+$("#addf").onsubmit=async e=>{e.preventDefault();
+ const{error}=await sb.from("menu_items").insert({name:$("#an").value.trim(),note:$("#at").value.trim()||null,price:parseInt($("#ap").value,10),category:$("#ac").value,kind:$("#ak").value});
+ if(error)return say("Couldn’t add the item.",1);e.target.reset();say("Added.");loadMenu()};
+async function loadPhotos(){const{data,error}=await sb.from("site_photos").select("*").order("key");
+ if(error)return say("Couldn’t load photos.",1);
+ $("#photos").innerHTML=data.map(r=>`<div class="card" data-key="${esc(r.key)}">${r.url?`<img src="${esc(r.url)}" alt="">`:'<div class="none">No photo yet</div>'}<b>${esc(r.label)}</b><input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload photo: ${esc(r.label)}">${r.url?'<button class="rm">Remove</button>':""}</div>`).join("")}
+$("#photos").onchange=async e=>{const f=e.target.files?.[0],key=e.target.closest(".card")?.dataset.key;if(!f||!key)return;
+ const ext={"image/jpeg":"jpg","image/png":"png","image/webp":"webp"}[f.type];
+ if(!ext)return say("Use a JPG, PNG or WebP photo.",1);if(f.size>3*1024*1024)return say("That photo is over 3 MB. Use a smaller one.",1);
+ say("Uploading…");const path=`${key}-${Date.now()}.${ext}`;
+ const up=await sb.storage.from("photos").upload(path,f,{contentType:f.type});if(up.error)return say("Upload failed.",1);
+ const url=sb.storage.from("photos").getPublicUrl(path).data.publicUrl;
+ const{error}=await sb.from("site_photos").update({url}).eq("key",key);
+ say(error?"Couldn’t attach the photo.":"Photo updated.",!!error);loadPhotos()};
+$("#photos").onclick=async e=>{if(!e.target.classList.contains("rm"))return;const key=e.target.closest(".card").dataset.key;
+ const{error}=await sb.from("site_photos").update({url:null}).eq("key",key);say(error?"Couldn’t remove.":"Removed.",!!error);loadPhotos()};
+async function loadStaff(){const{data,error}=await sb.from("profiles").select("*").order("email");
+ if(error)return say("Couldn’t load staff.",1);
+ $("#staff").innerHTML=data.map(r=>`<tr data-id="${r.id}"><td>${esc(r.email)}</td><td><select aria-label="Role for ${esc(r.email)}">${opts(["owner","staff"],r.role)}</select></td><td><button class="rs p">Save role</button></td></tr>`).join("")}
+$("#staff").onclick=async e=>{if(!e.target.classList.contains("rs"))return;const tr=e.target.closest("tr"),r=tr.querySelector("select").value;
+ if(tr.dataset.id===uid&&r!=="owner")return say("You can’t remove your own owner access.",1);
+ const{error}=await sb.from("profiles").update({role:r}).eq("id",tr.dataset.id);say(error?"Couldn’t change the role.":"Role saved.",!!error)};
+boot();
+</script></body></html>
